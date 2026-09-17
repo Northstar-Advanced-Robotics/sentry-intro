@@ -1,8 +1,6 @@
 # Sentry Intro 
 
-Complete the following setup before continuing 
-- [SSH setup](https://github.com/Northstar-Advanced-Robotics/resources/tree/david/refactor/setup/ssh.md)
-- [Docker setup](https://github.com/Northstar-Advanced-Robotics/resources/tree/david/refactor/setup/docker_setup.md)
+Complete the [sentry setup](https://github.com/Northstar-Advanced-Robotics/resources/tree/main/sentry/README.md) before continuing 
 
 ## Tutorials
 

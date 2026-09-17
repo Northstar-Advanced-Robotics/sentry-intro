@@ -5,7 +5,7 @@ MAKEFILE_DIR := $(dir $(lastword ${MAKEFILE_LIST}))
 IMAGE_NAME ?= northstar/sentry:intro
 DOCKER_CMD ?= docker
 DOCKER_RUN_ARGS ?= -it --rm -v ${MAKEFILE_DIR}:/ws:Z -w /ws 
-COLCON_BUILD_ARGS ?= --symlink-install --event-handlers console_direct+ 
+COLCON_BUILD_ARGS ?= --symlink-install --event-handlers console_cohesion+ 
 PACKAGE ?=
 BUILD_TYPE ?= Debug
 

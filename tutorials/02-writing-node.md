@@ -19,6 +19,7 @@ This command will create a `package.xml` and a `CMakeLists.txt`, which if you re
 
 ## Stating dependencies
 
+### Declaring dependencies in `package.xml`
 Every ROS 2 C++ node needs `rclcpp`, the ros c++ client lib.
 To properly add this library as a dependency, we need to add some lines to `package.xml`.
 
@@ -29,7 +30,7 @@ There are many types of dependencies, such as `buildtool_depend` and `exec_depen
 The purpose of stating dependencies in `package.xml` is not to make it available to code, but to make `colcon`, the ros2 build system, effectively coordinate building the ros2 workspace.
 
 <details>
-<summary><b>`package.xml`</b></summary>
+<summary><b>Finished `package.xml`</b></summary>
 
 ```xml
 <?xml version="1.0"?>
@@ -43,7 +44,7 @@ The purpose of stating dependencies in `package.xml` is not to make it available
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>rclcpp</depend> <-- ADDED
+  <depend>rclcpp</depend> <!-- ADDED -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
@@ -54,3 +55,40 @@ The purpose of stating dependencies in `package.xml` is not to make it available
 </package>
 ```
 </details>
+
+### Stating dependencies in `CMakeLists.txt`
+
+Declaring dependencies in `CMakeLists.txt` makes them available in code.
+You can declare them using `find_package(<dependency> REQUIRED)`
+
+<details>
+<summary><b>Finished `CMakeLists.txt`</b></summary>
+
+```cmake
+cmake_minimum_required(VERSION 3.8)
+project(mypub)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  # the following line skips the linter which checks for copyrights
+  # comment the line when a copyright and license is added to all source files
+  set(ament_cmake_copyright_FOUND TRUE)
+  # the following line skips cpplint (only works in a git repo)
+  # comment the line when this package is in a git repo and when
+  # a copyright and license is added to all source files
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
+
+ament_package()
+```
+</details>
+

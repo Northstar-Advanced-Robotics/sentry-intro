@@ -17,6 +17,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 image_name = "northstar/sentry:intro"
 build_type = "Debug"
 docker_cmd = "podman"
+package = None
 docker_run_args = [
     "-it",
     "--rm",
@@ -36,15 +37,20 @@ def shell():
 
 
 def build():
-    subprocess.run(["colcon", "build", *colcon_args])
+    cmd = ["colcon", "build", *colcon_args]
+    if package is None:
+        subprocess.run(cmd)
+    else:
+        subprocess.run([*cmd, "--packages-up-to", package])
 
 def main():
+    global package
     parser = argparse.ArgumentParser(description="Repo actions script")
-    parser.add_argument(
-        "cmd", type=Commands, choices=list(Commands), help="Subcommand to execute"
-    )
+    parser.add_argument("cmd", type=Commands, choices=list(Commands), help="Subcommand to execute")
+    parser.add_argument("--package", type=str, help="specify a package to build")
 
     args = parser.parse_args()
+    # package = args.package
     match args.cmd:
         case Commands.shell:
             shell()

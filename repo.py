@@ -2,6 +2,7 @@
 import argparse
 import os
 import subprocess
+import shutil
 runcmd = subprocess.run
 
 repo_root = os.path.dirname(os.path.abspath(__file__))
@@ -19,8 +20,14 @@ colcon_args: list[str] = [
     "console_cohesion+"
 ]
 
+def in_container() -> bool:
+    return not os.getenv("IN_CONTAINER") is None
+
 def build(args) -> None:
-    runcmd([args.docker_cmd, "build", "-t", args.image_name, "-f", "Dockerfile", "."])
+    if in_container():
+        print("This repository action is meant for outside container use")
+    else:
+        runcmd([args.docker_cmd, "build", "-t", args.image_name, "-f", "Dockerfile", "."])
 
 
 def shell(args) -> None:
@@ -34,7 +41,7 @@ def shell(args) -> None:
 
 
 def compile(args) -> None:
-    if os.getenv("IN_CONTAINER") is None:
+    if not in_container():
         print("compile is an in-container command, please enter a shell using ./repo.py shell")
     else:
         cmd = ["colcon", "build", *colcon_args]
@@ -43,9 +50,16 @@ def compile(args) -> None:
         else:
             runcmd([*cmd, "--packages-up-to", args.package])
 
+def find_default_docker() -> str:
+    for cmd in ["podman", "docker"]:
+        if shutil.which(cmd) is not None:
+            return cmd
+    else:
+        return "docker"
+
 
 def add_docker_args(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--docker-cmd", type=str, default="docker", help="Docker (or Podman) binary")
+    parser.add_argument("--docker-cmd", type=str, default=find_default_docker(), help="Docker (or Podman) binary")
     parser.add_argument("--image-name", type=str, default="northstar/sentry:intro", help="Container image name")
 
 

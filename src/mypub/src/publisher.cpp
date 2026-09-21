@@ -7,7 +7,7 @@
 
 class MinimalPublisher : public rclcpp::Node {
 public:
-  MinimalPublisher() : Node{"minimal_publisher"}, m_count{0} {
+  MinimalPublisher() : Node{"my_publisher_node"}, m_count{0} {
     m_publisher = this->create_publisher<std_msgs::msg::String>("topic", 10);
     m_timer = this->create_wall_timer(std::chrono::milliseconds(500),
                                       [this] { this->timer_callback(); });

@@ -8,12 +8,13 @@ Before writing any code, make sure to enter the container environment, otherwise
 
 Entering a shell is as simple as `python repo.py shell`
 
-## Creating a ROS 2 Node skeleton 
+## Creating a ROS 2 package skeleton 
 
-`cd` into `src`, then you can create the node using:
+`cd` into `src`, then you can create the package using:
 ```bash
-ros2 pkg create --build-type --license MIT ament_cmake mypub
+ros2 pkg create --build-type ament_cmake --license MIT mypub
 ```
+You should have a directory named `mypub` under `src`. If you accidentally make it somewhere else, you can simply delete it.
 
 This command will create a `package.xml` and a `CMakeLists.txt`, which if you remember from lesson 1, are the only required files.
 
@@ -23,7 +24,7 @@ This command will create a `package.xml` and a `CMakeLists.txt`, which if you re
 Every ROS 2 C++ node needs `rclcpp`, the ros c++ client lib.
 To properly add this library as a dependency, we need to add some lines to `package.xml`.
 
-There are many types of dependencies, such as `buildtool_depend` and `exec_depend`, however to state that a dependency is required for both compiling and running code, we use `<depend>mypkg..<\depend>` 
+There are many types of dependencies, such as `build_depend` and `exec_depend`, however to state that a dependency is required for both compiling and running code, we use `<depend>mypkg</depend>` 
 
 > NOTE: Adding dependencies to `package.xml` operates on the scope of ros2 packages. Regular C++ libraries should not be added to the `package.xml`
 
@@ -59,10 +60,10 @@ The purpose of stating dependencies in `package.xml` is not to make it available
 ### Stating dependencies in `CMakeLists.txt`
 
 Declaring dependencies in `CMakeLists.txt` makes them available in code.
-You can declare them using `find_package(<dependency> REQUIRED)`
+You can declare them using `find_package(mypkg REQUIRED)`
 
 <details>
-<summary><b>Finished `CMakeLists.txt`</b></summary>
+<summary><b>`CMakeLists.txt` with dependencies</b></summary>
 
 ```cmake
 cmake_minimum_required(VERSION 3.8)
@@ -72,9 +73,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find dependencies
+# Always needed, provides cmake integration with colcon
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
+find_package(rclcpp REQUIRED) # <== ADDED
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -90,5 +91,41 @@ endif()
 
 ament_package()
 ```
+> WARNING: `ament_package()` must be the last line of `CMakeLists.txt`.
 </details>
 
+## Writing the build script
+
+Just declaring dependencies in `CMakeLists.txt` won't get us very far though.
+The main goal of this file is to describe what executables/libraries are being built and how.
+
+To build an executable, one needs to declare the target with its sources like so:
+```cmake
+add_executable(my_publisher_node src/publisher.cpp)
+```
+> NOTE: Header files (`.h` and `.hpp`) are not included in add_executable source list.
+
+To declare this target needs `rclcpp`, you write the following:
+```cmake
+target_link_libraries(my_publisher_node PRIVATE rclcpp::rclcpp)
+```
+> NOTE: In official ROS 2 docs, you might see `ament_target_dependencies` rather than `target_link_libraries`.
+We use `target_link_libraries` because it works not just for ros2 packages, but for standard C++ libraries as well. 
+
+This command specifies both linking and adding the neccessary include paths.
+
+We will also specify C++ 20 so we can use the modern goodies.
+```cmake
+target_compile_features(my_publisher_node PRIVATE cxx_std_20)
+```
+
+This is enough to compile the exectuable correctly, but we need to add one last thing to properly integrate it into the ROS 2 ecosystem:
+```cmake
+install(TARGETS
+  my_publisher_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+```
+
+This tells cmake to copy the exectuable to `<install-prefix>/lib/mypub/my_publisher_node` during installation.
+This is where ROS 2 expects package executables to be located. Without this line ROS 2 cannot run the exectuable because it does not know where it is. 

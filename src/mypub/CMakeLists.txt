@@ -11,15 +11,26 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
-add_executable(my_node
-  src/main.cpp
+add_executable(publisher_node
+  src/publisher.cpp
 )
-
-target_link_libraries(my_node
+target_link_libraries(publisher_node
 PUBLIC
   rclcpp::rclcpp
   std_msgs::std_msgs
 )
+target_compile_features(publisher_node PRIVATE cxx_std_20)
+
+# add_executable(listener_node
+#   src/listener.cpp
+# )
+# target_link_libraries(listener_node
+# PUBLIC
+#   rclcpp::rclcpp
+#   std_msgs::std_msgs
+# )
+# target_compile_features(listener_node PRIVATE cxx_std_20)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

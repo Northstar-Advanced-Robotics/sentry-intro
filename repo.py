@@ -1,61 +1,71 @@
 #!/usr/bin/env python3
-import subprocess
 import argparse
 import os
-from enum import Enum
+import subprocess
+runcmd = subprocess.run
 
-
-class Commands(str, Enum):
-    shell = "shell"
-    build = "build"
-
-    def __str__(self):
-        return self.value
-
-
-root_dir = os.path.dirname(os.path.abspath(__file__))
-image_name = "northstar/sentry:intro"
-build_type = "Debug"
-docker_cmd = "podman"
-package = None
-docker_run_args = [
+repo_root = os.path.dirname(os.path.abspath(__file__))
+docker_run_args: list[str] = [
     "-it",
     "--rm",
-    "-v",  f"{root_dir}:/ws:Z",
-    "-w",  "/ws"
+    "-e",  "IN_CONTAINER=1",
+    "-e",  "COLORTERM",
+    "-v",  f"{repo_root}:/ws:Z",
+    "-w",  "/ws",
 ]
-
-colcon_args = [
+colcon_args: list[str] = [
     "--symlink-install",
     "--event-handlers",
     "console_cohesion+"
 ]
 
-def shell():
-    subprocess.run([docker_cmd, "build", "-t", image_name, "-f", "Dockerfile", "."])
-    subprocess.run([docker_cmd, "run", *docker_run_args, image_name, "bash"])
+def build(args) -> None:
+    runcmd([args.docker_cmd, "build", "-t", args.image_name, "-f", "Dockerfile", "."])
 
 
-def build():
-    cmd = ["colcon", "build", *colcon_args]
-    if package is None:
-        subprocess.run(cmd)
+def shell(args) -> None:
+    check = runcmd([args.docker_cmd, "container", "inspect", args.container_name], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if check.returncode == 0:
+        print("Entering old container..")
+        runcmd([args.docker_cmd, "exec", "-it", args.container_name, "bash"])
     else:
-        subprocess.run([*cmd, "--packages-up-to", package])
+        build(args)
+        runcmd([args.docker_cmd, "run", *docker_run_args, f"--name={args.container_name}", args.image_name, "bash"])
 
-def main():
-    global package
+
+def compile(args) -> None:
+    if os.getenv("IN_CONTAINER") is None:
+        print("compile is an in-container command, please enter a shell using ./repo.py shell")
+    else:
+        cmd = ["colcon", "build", *colcon_args]
+        if args.package is None:
+            runcmd(cmd)
+        else:
+            runcmd([*cmd, "--packages-up-to", args.package])
+
+
+def add_docker_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--docker-cmd", type=str, default="docker", help="Docker (or Podman) binary")
+    parser.add_argument("--image-name", type=str, default="northstar/sentry:intro", help="Container image name")
+
+
+def main() -> None:
     parser = argparse.ArgumentParser(description="Repo actions script")
-    parser.add_argument("cmd", type=Commands, choices=list(Commands), help="Subcommand to execute")
-    parser.add_argument("--package", type=str, help="specify a package to build")
+    subparsers = parser.add_subparsers(dest="command", required=True, help="subcommands")
+
+    build_parser = subparsers.add_parser("build", help="Build the container image")
+    add_docker_args(build_parser)
+
+    shell_parser = subparsers.add_parser("shell", help="Enter a shell inside the container")
+    add_docker_args(shell_parser)
+    shell_parser.add_argument("--container-name", type=str, default="sentry-intro-container", help="Specify a package to build")
+
+    compile_parser = subparsers.add_parser("compile", help="Compile the ROS 2 workspace")
+    compile_parser.add_argument("--package", type=str, default=None, help="Specify a package to build")
+    compile_parser.add_argument("--build-type", type=str, default="Debug", choices=["Debug", "Release", "RelWithDebInfo"], help="Specify colcon build type")
 
     args = parser.parse_args()
-    # package = args.package
-    match args.cmd:
-        case Commands.shell:
-            shell()
-        case Commands.build:
-            build()
+    globals()[args.command](args)
 
 
 if __name__ == "__main__":

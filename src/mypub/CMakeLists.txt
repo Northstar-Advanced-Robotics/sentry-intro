@@ -12,7 +12,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 
 add_executable(publisher_node
-  src/publisher.cpp
+  src/main.cpp
 )
 
 target_link_libraries(publisher_node

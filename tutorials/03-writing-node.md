@@ -1,4 +1,4 @@
-# Writing a ROS 2 node
+# Setting up the package
 
 Before writing any code, make sure to enter the container environment, otherwise your IDE will go crazy.
 
@@ -46,6 +46,7 @@ The purpose of stating dependencies in `package.xml` is not to make it available
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend> <!-- ADDED -->
+  <depend>std_msgs</depend> <!-- ADDED -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
@@ -76,22 +77,11 @@ endif()
 # Always needed, provides cmake integration with colcon
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED) # <== ADDED
+find_package(std_msgs REQUIRED) # <== ADDED
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
-
+# ...
 ament_package()
 ```
-> WARNING: `ament_package()` must be the last line of `CMakeLists.txt`.
 </details>
 
 ## Writing the build script
@@ -112,14 +102,14 @@ target_link_libraries(my_publisher_node PRIVATE rclcpp::rclcpp)
 > NOTE: In official ROS 2 docs, you might see `ament_target_dependencies` rather than `target_link_libraries`.
 We use `target_link_libraries` because it works not just for ros2 packages, but for standard C++ libraries as well. 
 
-This command specifies both linking and adding the neccessary include paths.
+This command specifies both linking and adding the necessary include paths.
 
 We will also specify C++ 20 so we can use the modern goodies.
 ```cmake
 target_compile_features(my_publisher_node PRIVATE cxx_std_20)
 ```
 
-This is enough to compile the exectuable correctly, but we need to add one last thing to properly integrate it into the ROS 2 ecosystem:
+This is enough to compile the executable correctly, but we need to add one last thing to properly integrate it into the ROS 2 ecosystem:
 ```cmake
 install(TARGETS
   my_publisher_node
@@ -127,5 +117,6 @@ install(TARGETS
 )
 ```
 
-This tells cmake to copy the exectuable to `<install-prefix>/lib/mypub/my_publisher_node` during installation.
-This is where ROS 2 expects package executables to be located. Without this line ROS 2 cannot run the exectuable because it does not know where it is. 
+This tells cmake to copy the executable to `<install-prefix>/lib/mypub/my_publisher_node` during installation.
+This is where ROS 2 expects package executables to be located. Without this line ROS 2 cannot run the executable because it does not know where it is. 
+> WARNING: `ament_package()` must be the last line of `CMakeLists.txt`.

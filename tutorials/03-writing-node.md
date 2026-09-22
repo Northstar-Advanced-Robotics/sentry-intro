@@ -2,7 +2,7 @@
 
 Copy the following code into `src/my_package/src/publisher.cpp` and compile using
 ```bash
-./repo.py compile
+python repo.py compile
 ```
 
 <details>

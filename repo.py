@@ -9,7 +9,6 @@ repo_root = os.path.dirname(os.path.abspath(__file__))
 docker_run_args: list[str] = [
     "-it",
     "--rm",
-    "-e",  "IN_CONTAINER=1",
     "-e",  "COLORTERM",
     "-v",  f"{repo_root}:/ws:Z",
     "-w",  "/ws",

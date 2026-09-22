@@ -3,7 +3,7 @@
 {
 	"name": "Dev Environment",
 	"image": "northstar/sentry:intro",
-	"initializeCommand": "python repo.py build",
+	"initializeCommand": "python3 repo.py build",
 	"remoteUser": "ubuntu",
 	"containerUser": "ubuntu",
 	"updateRemoteUserUID": true,

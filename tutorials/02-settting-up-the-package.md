@@ -139,4 +139,4 @@ int main() {
 ```
 </details>
 
-Once you have the hello world writen, you should be able to compile with no errors using `./repo.py compile`
+Once you have the hello world writen, you should be able to compile with no errors using `./repo.py compile`.

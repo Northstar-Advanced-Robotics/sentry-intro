@@ -1,5 +1,6 @@
 # Writing a ROS Node
 
+The following is a very basic example of a ROS 2 Node. We will go through each key part. Before the breakdown, 
 Copy the following code into `src/my_package/src/publisher.cpp` and compile using
 ```bash
 python repo.py compile

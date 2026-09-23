@@ -18,6 +18,7 @@
 			],
 			"settings": {
 				"editor.formatOnSave": true
+				"C_Cpp.intelliSenseEngine": "Disabled",
 			}
 		}
 	}

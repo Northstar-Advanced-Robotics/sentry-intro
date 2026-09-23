@@ -15,9 +15,9 @@ python repo.py compile
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
 
-class MinimalPublisher : public rclcpp::Node {
+class MyPublisher : public rclcpp::Node {
 public:
-  MinimalPublisher() : Node{"my_publisher_node"}, m_count{0} {
+  MyPublisher() : Node{"my_publisher_node"}, m_count{0} {
     m_publisher = this->create_publisher<std_msgs::msg::String>("topic", 10);
     m_timer = this->create_wall_timer(std::chrono::milliseconds(500),
                                       [this] { this->timer_callback(); });
@@ -38,9 +38,18 @@ private:
 
 int main(int argc, char *argv[]) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<MinimalPublisher>());
+  rclcpp::spin(std::make_shared<MyPublisher>());
   rclcpp::shutdown();
   return 0;
 }
- ```
+```
 </details>
+
+## Code breakdown
+
+ROS 2 C++ nodes inherit from `rclcpp::Node`. The argument to the `rclcpp::Node` constructor is the name of the node.
+
+This line right here is what creates the topic 
+```c++
+    m_publisher = this->create_publisher<std_msgs::msg::String>("topic", 10);
+```

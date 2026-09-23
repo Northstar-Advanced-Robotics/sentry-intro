@@ -10,6 +10,7 @@ docker_run_args: list[str] = [
     "-it",
     "--rm",
     "-e",  "COLORTERM",
+    "-e",  "TERM=xterm-256color",
     "-v",  f"{repo_root}:/ws:Z",
     "-w",  "/ws",
 ]

@@ -4,7 +4,7 @@
 class MyListener : public rclcpp::Node {
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr m_subscription;
 
-  auto message_callback(const std_msgs::msg::String &msg) -> void {
+  void message_callback(const std_msgs::msg::String &msg) {
     RCLCPP_INFO(this->get_logger(), "Recieved message {%s}'", msg.data.c_str());
   }
 
@@ -18,7 +18,7 @@ public:
   }
 };
 
-auto main(int argc, char *argv[]) -> int {
+int main(int argc, char *argv[]) {
   rclcpp::init(argc, argv);
   rclcpp::spin(std::make_shared<MyListener>());
   rclcpp::shutdown();

@@ -15,7 +15,7 @@ add_executable(my_publisher_node
   src/publisher.cpp
 )
 target_link_libraries(my_publisher_node
-PUBLIC
+PRIVATE
   rclcpp::rclcpp
   std_msgs::std_msgs
 )
@@ -25,7 +25,7 @@ add_executable(my_listener_node
 )
 
 target_link_libraries(my_listener_node
-PUBLIC
+PRIVATE
   rclcpp::rclcpp
   std_msgs::std_msgs
 )

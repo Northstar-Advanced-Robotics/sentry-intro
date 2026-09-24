@@ -107,11 +107,6 @@ We use `target_link_libraries` because it works not just for ros2 packages, but 
 
 This command specifies both linking and adding the necessary include paths.
 
-We will also specify C++ 20 so we can use the modern goodies.
-```cmake
-target_compile_features(my_publisher_node PRIVATE cxx_std_20)
-```
-
 This is enough to compile the executable correctly, but we need to add one last thing to properly integrate it into the ROS 2 ecosystem:
 ```cmake
 install(TARGETS
@@ -120,13 +115,13 @@ install(TARGETS
 )
 ```
 
-This tells cmake to copy the executable to `<install-prefix>/lib/mypub/my_publisher_node` during installation.
+This tells cmake to copy the executable to `<install-prefix>/lib/my_package/my_publisher_node` during installation.
 This is where ROS 2 expects package executables to be located. Without this line ROS 2 cannot run the executable because it does not know where it is. 
 > WARNING: `ament_package()` must be the last line of `CMakeLists.txt`.
 
 ## Final check
 
-If you try to build right now, you will get an error because `src/mypub/src/publisher.cpp` does not exist. So we will write a hello world at that location so that cmake can run and generate the neccessary information for IDE's to provide autocomplete
+If you try to build right now, you will get an error because `src/my_package/src/publisher.cpp` does not exist. So we will write a hello world at that location so that cmake can run and generate the neccessary information for IDE's to provide autocomplete
 <details>
 <summary><b>Hello World</b></summary>
 
@@ -139,4 +134,4 @@ int main() {
 ```
 </details>
 
-Once you have the hello world writen, you should be able to compile with no errors using `./repo.py compile`.
+Once you have the hello world writen, you should be able to compile with no errors using `colcon build`.

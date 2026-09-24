@@ -12,9 +12,9 @@ Entering a shell is as simple as `python repo.py shell`
 
 `cd` into `src`, then you can create the package using:
 ```bash
-ros2 pkg create --build-type ament_cmake --license MIT mypub
+ros2 pkg create --build-type ament_cmake --license MIT my_package
 ```
-You should have a directory named `mypub` under `src`. If you accidentally make it somewhere else, you can simply delete it.
+You should have a directory named `my_package` under `src`. If you accidentally make it somewhere else, you can simply delete it.
 
 This command will create a `package.xml` and a `CMakeLists.txt`, which if you remember from lesson 1, are the only required files.
 
@@ -37,7 +37,7 @@ The purpose of stating dependencies in `package.xml` is not to make it available
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>mypub</name>
+  <name>my_package</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
   <maintainer email="root@todo.todo">root</maintainer>
@@ -61,14 +61,14 @@ The purpose of stating dependencies in `package.xml` is not to make it available
 ### Stating dependencies in `CMakeLists.txt`
 
 Declaring dependencies in `CMakeLists.txt` makes them available in code.
-You can declare them using `find_package(mypkg REQUIRED)`
+You can declare them using `find_package(<package> REQUIRED)`
 
 <details>
 <summary><b>`CMakeLists.txt` with dependencies</b></summary>
 
 ```cmake
 cmake_minimum_required(VERSION 3.8)
-project(mypub)
+project(my_package)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)

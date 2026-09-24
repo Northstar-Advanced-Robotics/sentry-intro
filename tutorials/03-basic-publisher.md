@@ -10,9 +10,7 @@ colcon build
 <summary><b>Basic Publisher Node</b></summary>
 
 ```c++
-#include <format>
 #include <string>
-#include <chrono>
 
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/string.hpp>
@@ -27,9 +25,9 @@ public:
   }
 
 private:
-  void timer_callback() {
+  auto timer_callback() -> void {
     auto message = std_msgs::msg::String{};
-    message.data = std::format("Hello world! {}", this->m_count++);
+    message.data = "Hello world! " + std::to_string(this->m_count++);
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
     this->m_publisher->publish(message);
   }

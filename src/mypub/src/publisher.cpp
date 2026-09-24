@@ -1,4 +1,3 @@
-#include <format>
 #include <string>
 
 #include <rclcpp/rclcpp.hpp>
@@ -16,7 +15,7 @@ public:
 private:
   auto timer_callback() -> void {
     auto message = std_msgs::msg::String{};
-    message.data = std::format("Hello world! {}\n", this->m_count++);
+    message.data = "Hello world! " + std::to_string(this->m_count++);
     RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
     this->m_publisher->publish(message);
   }

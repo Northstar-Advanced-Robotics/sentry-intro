@@ -3,7 +3,7 @@
 {
 	"name": "Dev Environment",
 	"image": "northstar/sentry:intro",
-	"initializeCommand": "python3 repo.py build",
+	"initializeCommand": "python3 repo.py build || python repo.py build",
 	"remoteUser": "ubuntu",
 	"containerUser": "ubuntu",
 	"updateRemoteUserUID": true,
@@ -17,8 +17,8 @@
 				"ms-python.python",
 			],
 			"settings": {
-				"editor.formatOnSave": true
-				"C_Cpp.intelliSenseEngine": "Disabled",
+				"editor.formatOnSave": true,
+				"C_Cpp.intelliSenseEngine": "Disabled"
 			}
 		}
 	}

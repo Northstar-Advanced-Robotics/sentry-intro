@@ -70,6 +70,14 @@ The following line creates a timer that runs a lambda every 500ms, which in turn
 
 `timer_callback` is a simple function that creates a `std_msgs::msg::String`, logs it using ROS logging macros, and the publisher it to the topic.
 
+There are all the member variables we are using in our `MyPublisher` class. Take note of the types of `m_publisher` and `m_timer`.
+`my_publisher`s type has to have the same template argument type as the `create_publisher` call in the constructor
+```c++
+  size_t m_count;
+  rclcpp::TimerBase::SharedPtr m_timer;
+  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr m_publisher;
+```
+ 
 `main` contains the basic ROS 2 boilerplate for running a single node.
 
 ## Running the node
@@ -84,3 +92,8 @@ If everything has gone well, you should be able to run:
 ros2 run my_package my_publisher_node
 ```
 Where `my_package` is the name of the package and `my_publisher_node` is the name of the executable.
+
+If you open another terminal inside the container, you can run the following to echo the output of the topic `"topic"` as well.
+```bash
+ros2 topic echo topic
+```
